@@ -35,11 +35,16 @@
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
+    width: 90%;
   }
 
   h1 {
-    font-size: 48px;
+    font-size: 36px;
     animation: glitch 1s infinite;
+  }
+
+  @media (min-width: 768px) {
+    h1 { font-size: 48px; }
   }
 
   @keyframes glitch {
@@ -48,76 +53,85 @@
     100% { text-shadow: 2px 0 red, -2px 0 blue; }
   }
 
-  .blink {
-    animation: blink 1s infinite;
-  }
-
-  @keyframes blink {
-    50% { opacity: 0; }
-  }
+  .blink { animation: blink 1s infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
 
   .terminal {
     position: absolute;
     bottom: 0;
     width: 100%;
     padding: 10px;
-    font-size: 14px;
-    color: #00ffcc;
+    font-size: 12px;
   }
 
-  .hidden {
-    opacity: 0;
-  }
-
-  .reveal {
-    animation: fadeIn 3s forwards;
-  }
-
-  @keyframes fadeIn {
-    to { opacity: 1; }
-  }
+  .hidden { opacity: 0; }
+  .reveal { animation: fadeIn 3s forwards; }
+  @keyframes fadeIn { to { opacity: 1; } }
 
   .warning {
     color: red;
-    font-size: 20px;
+    font-size: 16px;
     margin-top: 20px;
+    animation: glitch 0.5s infinite;
   }
+
+  .eye {
+    position: fixed;
+    width: 40px;
+    opacity: 0.05;
+    animation: moveEye 10s infinite linear;
+  }
+
+  @keyframes moveEye {
+    0% { top: 10%; left: 10%; }
+    25% { top: 80%; left: 20%; }
+    50% { top: 50%; left: 80%; }
+    75% { top: 20%; left: 60%; }
+    100% { top: 10%; left: 10%; }
+  }
+
 </style>
 </head>
 
 <body class="scanlines">
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Eye_of_Providence.png" class="eye">
 
 <div class="center">
   <h1>TOP SECRET</h1>
   <p id="name"></p>
   <p class="blink">ДОСТУП РАЗРЕШЁН</p>
   <p class="hidden" id="invite">
-    Вы были выбраны.
-    <br><br>
-    Вас приглашают на закрытое собрание.
-    <br>
-    Тема: РЕПТИЛОИДЫ / МАСОНЫ / СКРЫТАЯ ИСТИНА
+    Вы были выбраны.<br><br>
+    Это не совпадение.<br>
+    Они наблюдали за вами.<br><br>
+    Тема встречи:<br>
+    РЕПТИЛОИДЫ / МАСОНЫ / НЕСУЩЕСТВУЮЩИЕ СТРАНЫ
   </p>
-  <p class="warning hidden" id="warn">ОНИ УЖЕ ЗНАЮТ ЧТО ТЫ ЗДЕСЬ</p>
+  <p class="warning hidden" id="warn">НЕ ОГЛЯДЫВАЙСЯ</p>
 </div>
 
 <div class="terminal" id="terminal"></div>
 
 <script>
-// имя из ссылки
 const params = new URLSearchParams(window.location.search);
 const name = params.get("name") || "АГЕНТ";
-document.getElementById("name").innerText = name + ", ИДЕНТИФИКАЦИЯ ПРОЙДЕНА.";
+document.getElementById("name").innerText = name + ", ДОСТУП ПОДТВЕРЖДЁН.";
 
-// имитация терминала
+// секретный код
+if (params.get("code") === "777") {
+  document.body.innerHTML += "<div style='position:fixed;top:10px;right:10px;color:red;'>СКРЫТЫЙ КАНАЛ АКТИВЕН</div>";
+}
+
+// терминал
 const terminal = document.getElementById("terminal");
 const lines = [
-  "[SYSTEM] подключение к защищенному каналу...",
-  "[OK] обход масонских фильтров",
-  "[OK] обнаружены рептилоиды",
-  "[WARNING] утечка информации",
-  "[DATA] координаты засекречены",
-  "[ACCESS] приглашение активировано"
+  "[INIT] попытка подключения...",
+  "[OK] масонские протоколы обойдены",
+  "[OK] сигнал перехвачен",
+  "[WARN] кто-то смотрит",
+  "[DATA] координаты скрыты",
+  "[???] они рядом"
 ];
 
 let i = 0;
@@ -125,13 +139,12 @@ function typeLine() {
   if (i < lines.length) {
     terminal.innerHTML += lines[i] + "<br>";
     i++;
-    setTimeout(typeLine, 700);
+    setTimeout(typeLine, 800);
   }
 }
-
 setTimeout(typeLine, 1000);
 
-// постепенное появление текста
+// появление текста
 setTimeout(() => {
   document.getElementById("invite").classList.add("reveal");
 }, 4000);
@@ -140,10 +153,28 @@ setTimeout(() => {
   document.getElementById("warn").classList.add("reveal");
 }, 7000);
 
-// случайные "глюки"
+// глюки
 setInterval(() => {
-  document.body.style.background = Math.random() > 0.95 ? "#001111" : "black";
+  document.body.style.background = Math.random() > 0.97 ? "#001111" : "black";
 }, 100);
+
+// пасхалка: клики
+let clicks = 0;
+document.body.addEventListener("click", () => {
+  clicks++;
+  if (clicks === 5) {
+    alert("ОНИ ЗАМЕТИЛИ ТЕБЯ");
+  }
+});
+
+// пасхалка: клавиатура
+let keys = "";
+document.addEventListener("keydown", (e) => {
+  keys += e.key;
+  if (keys.includes("truth")) {
+    document.body.innerHTML = "ИСТИНА СКРЫТА";
+  }
+});
 
 </script>
 
