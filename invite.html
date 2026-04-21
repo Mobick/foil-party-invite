@@ -4,100 +4,41 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TOP SECRET</title>
-
 <style>
-  body {
-    margin: 0;
-    background: black;
-    color: #00ffcc;
-    font-family: "Courier New", monospace;
-    overflow: hidden;
-  }
-
-  .scanlines::before {
-    content: "";
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: repeating-linear-gradient(
-      to bottom,
-      rgba(0,255,200,0.05),
-      rgba(0,255,200,0.05) 2px,
-      transparent 2px,
-      transparent 4px
-    );
-    pointer-events: none;
-  }
-
-  .center {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    width: 90%;
-  }
-
-  h1 {
-    font-size: 36px;
-    animation: glitch 1s infinite;
-  }
-
-  @media (min-width: 768px) {
-    h1 { font-size: 48px; }
-  }
-
-  @keyframes glitch {
-    0% { text-shadow: 2px 0 red, -2px 0 blue; }
-    50% { text-shadow: -2px 0 red, 2px 0 blue; }
-    100% { text-shadow: 2px 0 red, -2px 0 blue; }
-  }
-
-  .blink { animation: blink 1s infinite; }
-  @keyframes blink { 50% { opacity: 0; } }
-
-  .terminal {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    padding: 10px;
-    font-size: 12px;
-  }
-
-  .hidden { opacity: 0; }
-  .reveal { animation: fadeIn 3s forwards; }
-  @keyframes fadeIn { to { opacity: 1; } }
-
-  .warning {
-    color: red;
-    font-size: 16px;
-    margin-top: 20px;
-    animation: glitch 0.5s infinite;
-  }
-
-  .eye {
-    position: fixed;
-    width: 40px;
-    opacity: 0.05;
-    animation: moveEye 10s infinite linear;
-  }
-
-  @keyframes moveEye {
-    0% { top: 10%; left: 10%; }
-    25% { top: 80%; left: 20%; }
-    50% { top: 50%; left: 80%; }
-    75% { top: 20%; left: 60%; }
-    100% { top: 10%; left: 10%; }
-  }
-
+  body{margin:0;background:#000;color:#00ffcc;font-family:"Courier New",monospace;overflow:hidden}
+  .scan::before{content:"";position:fixed;inset:0;background:repeating-linear-gradient(to bottom,rgba(0,255,200,.05),rgba(0,255,200,.05) 2px,transparent 2px,transparent 4px);pointer-events:none}
+  .center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;width:90%}
+  h1{font-size:34px;animation:glitch 1s infinite}
+  @media(min-width:768px){h1{font-size:48px}}
+  @keyframes glitch{0%{text-shadow:2px 0 red,-2px 0 blue}50%{text-shadow:-2px 0 red,2px 0 blue}100%{text-shadow:2px 0 red,-2px 0 blue}}
+  .blink{animation:blink 1s infinite}@keyframes blink{50%{opacity:0}}
+  .terminal{position:absolute;bottom:0;width:100%;padding:10px;font-size:12px}
+  .hidden{opacity:0}.reveal{animation:fade 3s forwards}@keyframes fade{to{opacity:1}}
+  .warn{color:#f00;font-size:16px;margin-top:16px;animation:glitch .5s infinite}
+  .eye{position:fixed;width:42px;opacity:.05;animation:move 12s linear infinite}
+  @keyframes move{0%{top:10%;left:10%}25%{top:80%;left:20%}50%{top:50%;left:80%}75%{top:20%;left:60%}100%{top:10%;left:10%}}
+  .overlay{position:fixed;inset:0;background:#000;display:flex;align-items:center;justify-content:center;z-index:10}
+  .coords{margin-top:14px;font-size:14px;cursor:pointer}
+  .cam{position:fixed;top:10px;left:10px;color:#0f0;font-size:12px;display:none}
+  .select-only{color:transparent;background:transparent}
+  .select-only::selection{color:#0f0;background:#003333}
 </style>
 </head>
+<body class="scan">
 
-<body class="scanlines">
+<!-- Фальшивая 404 -->
+<div class="overlay" id="overlay">
+  <div>
+    <h1>404 NOT FOUND</h1>
+    <p>запрошенный ресурс не существует</p>
+  </div>
+</div>
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Eye_of_Providence.png" class="eye">
 
-<div class="center">
+<div class="cam" id="cam">● REC | CAMERA ACTIVE</div>
+
+<div class="center" id="main" style="display:none">
   <h1>TOP SECRET</h1>
   <p id="name"></p>
   <p class="blink">ДОСТУП РАЗРЕШЁН</p>
@@ -108,75 +49,67 @@
     Тема встречи:<br>
     РЕПТИЛОИДЫ / МАСОНЫ / НЕСУЩЕСТВУЮЩИЕ СТРАНЫ
   </p>
-  <p class="warning hidden" id="warn">НЕ ОГЛЯДЫВАЙСЯ</p>
+
+  <!-- координаты -->
+  <div class="coords" id="coords">[координаты зашифрованы]</div>
+
+  <p class="warn hidden" id="warn">НЕ ОГЛЯДЫВАЙСЯ</p>
+
+  <!-- скрытый текст -->
+  <p class="select-only">пароль: 777 | место: см. координаты</p>
 </div>
 
 <div class="terminal" id="terminal"></div>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const name = params.get("name") || "АГЕНТ";
-document.getElementById("name").innerText = name + ", ДОСТУП ПОДТВЕРЖДЁН.";
+const params=new URLSearchParams(location.search);
+const name=params.get("name")||"АГЕНТ";
 
-// секретный код
-if (params.get("code") === "777") {
-  document.body.innerHTML += "<div style='position:fixed;top:10px;right:10px;color:red;'>СКРЫТЫЙ КАНАЛ АКТИВЕН</div>";
-}
+// 404 -> reveal
+setTimeout(()=>{
+  document.getElementById("overlay").style.display="none";
+  document.getElementById("main").style.display="block";
+},2000);
+
+// имя
+setTimeout(()=>{
+  document.getElementById("name").innerText=name+", ДОСТУП ПОДТВЕРЖДЁН.";
+},2100);
 
 // терминал
-const terminal = document.getElementById("terminal");
-const lines = [
-  "[INIT] попытка подключения...",
-  "[OK] масонские протоколы обойдены",
-  "[OK] сигнал перехвачен",
-  "[WARN] кто-то смотрит",
-  "[DATA] координаты скрыты",
-  "[???] они рядом"
-];
+const term=document.getElementById("terminal");
+const lines=["[INIT] подключение...","[OK] обход фильтров","[WARN] за вами следят","[DATA] координаты скрыты","[???] не доверяй никому"];
+let i=0;function t(){if(i<lines.length){term.innerHTML+=lines[i]+"<br>";i++;setTimeout(t,800)}}setTimeout(t,1200);
 
-let i = 0;
-function typeLine() {
-  if (i < lines.length) {
-    terminal.innerHTML += lines[i] + "<br>";
-    i++;
-    setTimeout(typeLine, 800);
-  }
-}
-setTimeout(typeLine, 1000);
-
-// появление текста
-setTimeout(() => {
-  document.getElementById("invite").classList.add("reveal");
-}, 4000);
-
-setTimeout(() => {
-  document.getElementById("warn").classList.add("reveal");
-}, 7000);
+// reveal
+setTimeout(()=>{document.getElementById("invite").classList.add("reveal")},4000);
+setTimeout(()=>{document.getElementById("warn").classList.add("reveal")},7000);
 
 // глюки
-setInterval(() => {
-  document.body.style.background = Math.random() > 0.97 ? "#001111" : "black";
-}, 100);
+setInterval(()=>{document.body.style.background=Math.random()>.97?"#001111":"#000"},120);
 
-// пасхалка: клики
-let clicks = 0;
-document.body.addEventListener("click", () => {
-  clicks++;
-  if (clicks === 5) {
-    alert("ОНИ ЗАМЕТИЛИ ТЕБЯ");
-  }
+// координаты при копировании
+const coords=document.getElementById("coords");
+coords.addEventListener("click",()=>{
+  const text="52.5200, 13.4050"; // замени на свою локацию
+  navigator.clipboard.writeText(text);
+  coords.innerText="СКОПИРОВАНО";
 });
 
-// пасхалка: клавиатура
-let keys = "";
-document.addEventListener("keydown", (e) => {
-  keys += e.key;
-  if (keys.includes("truth")) {
-    document.body.innerHTML = "ИСТИНА СКРЫТА";
-  }
-});
+// фейковая камера
+setTimeout(()=>{
+  document.getElementById("cam").style.display="block";
+},5000);
+
+// пасхалка клики
+let c=0;document.body.addEventListener("click",()=>{c++;if(c===5)alert("ОНИ ЗАМЕТИЛИ ТЕБЯ")});
+
+// клавиатура
+let k="";document.addEventListener("keydown",e=>{k+=e.key;if(k.includes("truth")){document.body.innerHTML="ИСТИНА СКРЫТА"}});
+
+// секрет код
+if(params.get("code")==="777"){document.body.innerHTML+="<div style='position:fixed;top:10px;right:10px;color:red'>СКРЫТЫЙ КАНАЛ АКТИВЕН</div>"}
 
 </script>
-
 </body>
 </html>
