@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOP SECRET</title>
+
+<style>
+  body {
+    margin: 0;
+    background: black;
+    color: #00ffcc;
+    font-family: "Courier New", monospace;
+    overflow: hidden;
+  }
+
+  .scanlines::before {
+    content: "";
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(0,255,200,0.05),
+      rgba(0,255,200,0.05) 2px,
+      transparent 2px,
+      transparent 4px
+    );
+    pointer-events: none;
+  }
+
+  .center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 48px;
+    animation: glitch 1s infinite;
+  }
+
+  @keyframes glitch {
+    0% { text-shadow: 2px 0 red, -2px 0 blue; }
+    50% { text-shadow: -2px 0 red, 2px 0 blue; }
+    100% { text-shadow: 2px 0 red, -2px 0 blue; }
+  }
+
+  .blink {
+    animation: blink 1s infinite;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  .terminal {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    color: #00ffcc;
+  }
+
+  .hidden {
+    opacity: 0;
+  }
+
+  .reveal {
+    animation: fadeIn 3s forwards;
+  }
+
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+
+  .warning {
+    color: red;
+    font-size: 20px;
+    margin-top: 20px;
+  }
+</style>
+</head>
+
+<body class="scanlines">
+
+<div class="center">
+  <h1>TOP SECRET</h1>
+  <p id="name"></p>
+  <p class="blink">ДОСТУП РАЗРЕШЁН</p>
+  <p class="hidden" id="invite">
+    Вы были выбраны.
+    <br><br>
+    Вас приглашают на закрытое собрание.
+    <br>
+    Тема: РЕПТИЛОИДЫ / МАСОНЫ / СКРЫТАЯ ИСТИНА
+  </p>
+  <p class="warning hidden" id="warn">ОНИ УЖЕ ЗНАЮТ ЧТО ТЫ ЗДЕСЬ</p>
+</div>
+
+<div class="terminal" id="terminal"></div>
+
+<script>
+// имя из ссылки
+const params = new URLSearchParams(window.location.search);
+const name = params.get("name") || "АГЕНТ";
+document.getElementById("name").innerText = name + ", ИДЕНТИФИКАЦИЯ ПРОЙДЕНА.";
+
+// имитация терминала
+const terminal = document.getElementById("terminal");
+const lines = [
+  "[SYSTEM] подключение к защищенному каналу...",
+  "[OK] обход масонских фильтров",
+  "[OK] обнаружены рептилоиды",
+  "[WARNING] утечка информации",
+  "[DATA] координаты засекречены",
+  "[ACCESS] приглашение активировано"
+];
+
+let i = 0;
+function typeLine() {
+  if (i < lines.length) {
+    terminal.innerHTML += lines[i] + "<br>";
+    i++;
+    setTimeout(typeLine, 700);
+  }
+}
+
+setTimeout(typeLine, 1000);
+
+// постепенное появление текста
+setTimeout(() => {
+  document.getElementById("invite").classList.add("reveal");
+}, 4000);
+
+setTimeout(() => {
+  document.getElementById("warn").classList.add("reveal");
+}, 7000);
+
+// случайные "глюки"
+setInterval(() => {
+  document.body.style.background = Math.random() > 0.95 ? "#001111" : "black";
+}, 100);
+
+</script>
+
+</body>
+</html>
