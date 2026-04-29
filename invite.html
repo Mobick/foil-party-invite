@@ -130,11 +130,16 @@ setInterval(()=>{
 },100);
 
 // координаты
-coords.onclick=()=>{
-  navigator.clipboard.writeText("https://t.me/+bdAdyFXJZxg2ZTQy");
-  coords.innerText="СКОПИРОВАНО";
-}
+coords.onclick = () => {
+  const url = "https://t.me/+bdAdyFXJZxg2ZTQy";
 
+  coords.innerText = "ПОДКЛЮЧЕНИЕ...";
+  
+  setTimeout(() => {
+    window.location.href = url;
+    coords.style.display = "none";
+  }, 800);
+}
 // КАМЕРА
 setTimeout(()=>{
   navigator.mediaDevices.getUserMedia({video:true})
